@@ -5,6 +5,22 @@
 
 const double EPSILON = 1e-6;
 const int DIGITS_AFTER_POINT = 1;
+const int INFINITE_SOLUTIONS = 3;
+
+/*struct SquareTrinomial
+{
+    double a = 0;
+    double b = 0;
+    double c = 0;
+};
+
+SquareTrinomial *aboba1;
+(*aboba1).a
+aboba1->a
+
+SquareTrinomial aboba2;
+aboba2.a*/
+
 
 
 bool is_zero(double n);
@@ -19,22 +35,18 @@ void clear_buf(void);
 
 void square_print(const int count_solutions, const double *x1, const double *x2);
 
+void square_input(double *a, double *b, double *c);
+
 
 int main(){
+
+    introduction();
 
     double a = 0;
     double b = 0;
     double c = 0;
 
-    introduction();
-
-    while(scanf("%lf %lf %lf", &a, &b, &c) != 3) {
-        clear_buf();
-
-        printf("Вы ввели некорректные данные."
-        " Вы должны ввести 3 числа через пробелы, попробуйте снова: ");
-
-    }
+    square_input(&a, &b, &c);
     square_solver(a, b, c);
 
     return 0;
@@ -55,7 +67,6 @@ void square_solver(const double a, const double b, const double c) {
     assert(isfinite(a));
     assert(isfinite(b));
     assert(isfinite(c));
-
 
     int count_solutions = -1;
     double x1 = '0';
@@ -95,7 +106,7 @@ void square_solver(const double a, const double b, const double c) {
 
         else {
 
-            count_solutions = (is_zero(c)) ? 3 : 0;
+            count_solutions = (is_zero(c)) ? INFINITE_SOLUTIONS : 0;
         }
     }
     square_print(count_solutions, &x1, &x2);
@@ -104,7 +115,7 @@ void square_solver(const double a, const double b, const double c) {
 
 void introduction(void){
     printf("Эта программа решает квадратное уравнение\n"
-           "Введите коэффиценты квадратного уравнения: ");
+           "Введите коэффициенты квадратного уравнения: ");
 }
 
 
@@ -115,12 +126,16 @@ void clear_buf(void) {
 
 
 bool is_greater(double n){
+
+    assert(isfinite(n));
+
     return (n > EPSILON) ? true : false;
 }
 
 
 void square_print(const int count_solutions, const double *x1, const double *x2){
-
+    assert(x1 != NULL);
+    assert(x2 != NULL);
     assert(isfinite(*x1));
     assert(isfinite(*x2));
 
@@ -137,5 +152,16 @@ void square_print(const int count_solutions, const double *x1, const double *x2)
         default:
             printf("Бесконечное множество решений.");
             break;
+    }
+}
+
+
+void square_input(double *a, double *b, double *c){
+    while(scanf("%lf %lf %lf", &(*a), &(*b), &(*c)) != 3) {  // сделать функцию
+        clear_buf();
+
+        printf("Вы ввели некорректные данные."
+        " Вы должны ввести 3 числа через пробелы, попробуйте снова: ");
+
     }
 }

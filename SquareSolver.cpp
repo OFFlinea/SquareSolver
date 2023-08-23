@@ -2,17 +2,18 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+#include <windows.h>
 
 const double EPSILON = 1e-6;
 const int DIGITS_AFTER_POINT = 1;
 const int INFINITE_SOLUTIONS = 3;
-
+const int N_TESTS = 6;
 
 struct SquareTrinomial
 {
-    double a = 0;
-    double b = 0;
-    double c = 0;
+    double a;
+    double b;
+    double c;
 };
 
 struct Roots
@@ -22,12 +23,21 @@ struct Roots
     int count_solutions = -1;
 };
 
+struct RefRoots
+{
+    double x1;
+    double x2;
+    int count_solutions;
+};
+
 
 bool is_zero(double n);
 
 bool is_greater(double n);
 
-void square_solver(struct SquareTrinomial *coeffs);
+bool f_comparison(double x, double y);
+
+void square_solver(struct SquareTrinomial *coeffs, struct Roots *roots);
 
 void introduction(void);
 
@@ -37,17 +47,33 @@ void square_print(struct Roots *roots);
 
 void square_input(struct SquareTrinomial *coeffs);
 
+int TestOne(struct SquareTrinomial *coeffs, struct Roots *roots, struct RefRoots refroots);
+
+int TestAll(void);
+
+void linear_solver(struct SquareTrinomial *coeffs, struct Roots *roots);
+
+void test_question(void);
+
 
 int main(){
 
     introduction();
+    test_question();
 
-    SquareTrinomial coeffs;
+    struct Roots roots;
+    struct SquareTrinomial coeffs;
 
     square_input(&coeffs);
-    square_solver(&coeffs);
+    square_solver(&coeffs, &roots);
+    square_print(&roots);
 
     return 0;
+}
+
+
+void introduction(void){
+    printf("Эта программа решает квадратное уравнение\n");
 }
 
 
@@ -60,58 +86,16 @@ bool is_zero(double n) {
 }
 
 
-void square_solver(SquareTrinomial *coeffs) {
+bool is_greater(double n){
 
-    assert(isfinite(coeffs->a));
-    assert(isfinite(coeffs->b));
-    assert(isfinite(coeffs->c));
+    assert(isfinite(n));
 
-    struct Roots roots;
-
-    if (!is_zero(coeffs->a)) {
-
-        const double d = coeffs->b * coeffs->b - 4 * coeffs->a * coeffs->c;
-
-        if (is_greater(d)) {
-
-            const double d_sqrt = sqrt(d);
-            roots.x1 = (-coeffs->b + d_sqrt) / (2 * coeffs->a);
-            roots.x2 = (-coeffs->b - d_sqrt) / (2 * coeffs->a);
-            roots.count_solutions = 2;
-        }
-
-        else if (is_zero(d)) {
-
-            roots.x1 = -coeffs->b / (2 * coeffs->a);
-            roots.count_solutions = 1;
-        }
-
-        else {
-
-            roots.count_solutions = 0;
-        }
-    }
-
-    else {
-
-        if (!is_zero(coeffs->b)) {
-
-            roots.x1 = -coeffs->c / coeffs->b;
-            roots.count_solutions = 1;
-        }
-
-        else {
-
-            roots.count_solutions = (is_zero(coeffs->c)) ? INFINITE_SOLUTIONS : 0;
-        }
-    }
-    square_print(&roots);
+    return (n > EPSILON) ? true : false;
 }
 
 
-void introduction(void){
-    printf("Эта программа решает квадратное уравнение\n"
-           "Введите коэффициенты квадратного уравнения: ");
+bool f_comparison(double x, double y) {
+    return (fabs(x - y) < EPSILON) ? true : false;
 }
 
 
@@ -121,11 +105,79 @@ void clear_buf(void) {
 }
 
 
-bool is_greater(double n){
+void linear_solver(struct SquareTrinomial *coeffs, struct Roots *roots) {
 
-    assert(isfinite(n));
+    assert(coeffs != NULL);
+    assert(roots != NULL);
 
-    return (n > EPSILON) ? true : false;
+    if (!is_zero(coeffs->b)) {
+
+            roots->x1 = -coeffs->c / coeffs->b;
+            roots->x2 = roots->x1;
+            roots->count_solutions = 1;
+        }
+
+        else {
+
+            roots->count_solutions = (is_zero(coeffs->c)) ? INFINITE_SOLUTIONS : 0;
+        }
+}
+
+
+void square_input(struct SquareTrinomial *coeffs){
+
+    printf("Введите коэффициенты квадратного уравнения: ");
+
+    while(scanf("%lf %lf %lf", &coeffs->a, &coeffs->b, &coeffs->c) != 3) {
+
+        clear_buf();
+
+        HANDLE  hConsole;
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+
+        printf("Вы ввели некорректные данные."
+        " Вы должны ввести 3 числа через пробелы, попробуйте снова: ");
+
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+    }
+}
+
+
+void square_solver(struct SquareTrinomial *coeffs, struct Roots *roots) {
+
+    assert(isfinite(coeffs->a));
+    assert(isfinite(coeffs->b));
+    assert(isfinite(coeffs->c));
+    assert(coeffs != NULL);
+    assert(roots != NULL);
+
+    if (!is_zero(coeffs->a)) {
+
+        const double d = coeffs->b * coeffs->b - 4 * coeffs->a * coeffs->c;
+
+        if (is_greater(d)) {
+
+            const double d_sqrt = sqrt(d);
+            roots->x1 = (-coeffs->b + d_sqrt) / (2 * coeffs->a);
+            roots->x2 = (-coeffs->b - d_sqrt) / (2 * coeffs->a);
+            roots->count_solutions = 2;
+        }
+
+        else if (is_zero(d)) {
+
+            roots->x1 = -coeffs->b / (2 * coeffs->a);
+            roots->x2 = roots->x1;
+            roots->count_solutions = 1;
+        }
+
+        else {
+
+            roots->count_solutions = 0;
+        }
+    }
+
+    else linear_solver(coeffs, roots);
 }
 
 
@@ -136,6 +188,7 @@ void square_print(struct Roots *roots){
     assert(isfinite(roots->x2));
 
     switch(roots->count_solutions) {
+
         case 0:
             printf("У данного уравнения нет корней в действительных величинах.\n");
             break;
@@ -152,13 +205,80 @@ void square_print(struct Roots *roots){
 }
 
 
-void square_input(struct SquareTrinomial *coeffs){
-    while(scanf("%lf %lf %lf", &coeffs->a, &coeffs->b, &coeffs->c) != 3) {
+int TestOne(struct SquareTrinomial *coeffs, struct Roots *roots, struct RefRoots refroots) {
 
-        clear_buf();
+    assert(coeffs != NULL);
+    assert(roots != NULL);
 
-        printf("Вы ввели некорректные данные."
-        " Вы должны ввести 3 числа через пробелы, попробуйте снова: ");
+    square_solver(coeffs, roots);
 
+    if (!f_comparison(roots->x1, refroots.x1) || !f_comparison(roots->x2, refroots.x2) || roots->count_solutions != refroots.count_solutions) {
+
+        HANDLE  hConsole;
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+
+        printf("Failed: x1 = %lf, x2 = %lf, count_solutions = %d\n"
+               "Expected: x1 = %lf, x2 = %lf, count_solutions = %d\n", roots->x1, roots->x2, roots->count_solutions,
+                refroots.x1, refroots.x2, refroots.count_solutions);
+
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+
+        return 0;
     }
+    else {
+
+        HANDLE  hConsole;
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+        printf("Test OK.\n");
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+        return 1;
+    }
+}
+
+
+int TestAll(void) {
+
+    #define CREAT_TEST TestOne(&tests_coeffs[i], &roots, tests_refroots[i])
+
+    int count_correct_tests = 0;
+
+    struct SquareTrinomial tests_coeffs[] = {{1, 2, 1},
+                                             {2, 2, -4},
+                                             {0, 0, 0},
+                                             {0, 0, 6},
+                                             {0, 2, -4},
+                                             {1, 0, -4}};
+    struct RefRoots tests_refroots[] = {{-1, -1, 1},
+                                        {1, -2, 2},
+                                        {0, 0, INFINITE_SOLUTIONS},
+                                        {0, 0, 0},
+                                        {2, 2, 1},
+                                        {2, -2, 2}};
+
+    for(int i = 0; i < N_TESTS; i++) {
+
+        struct Roots roots;
+
+        count_correct_tests += CREAT_TEST;
+    }
+
+    #undef CREAT_TEST
+
+    return count_correct_tests;
+}
+
+
+void test_question(void){
+    printf("Хотите ли вы проверить работу программы?\nВведите 1,"
+           " если хотите, и что угодно, если вы доверяете программе.\n");
+    int answer = 0;
+    scanf("%d", &answer);
+    if (answer == 1) {
+
+        printf("Количество правильных тестов: %d\n"
+           "Количество пройденных тестов: %d\n", TestAll(), N_TESTS);
+    }
+    else clear_buf();
 }

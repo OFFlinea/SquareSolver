@@ -7,47 +7,45 @@ const double EPSILON = 1e-6;
 const int DIGITS_AFTER_POINT = 1;
 const int INFINITE_SOLUTIONS = 3;
 
-/*struct SquareTrinomial
+
+struct SquareTrinomial
 {
     double a = 0;
     double b = 0;
     double c = 0;
 };
 
-SquareTrinomial *aboba1;
-(*aboba1).a
-aboba1->a
-
-SquareTrinomial aboba2;
-aboba2.a*/
-
+struct Roots
+{
+    double x1 = 0;
+    double x2 = 0;
+    int count_solutions = -1;
+};
 
 
 bool is_zero(double n);
 
 bool is_greater(double n);
 
-void square_solver(const double a, const double b, const double c);
+void square_solver(struct SquareTrinomial *coeffs);
 
 void introduction(void);
 
 void clear_buf(void);
 
-void square_print(const int count_solutions, const double *x1, const double *x2);
+void square_print(struct Roots *roots);
 
-void square_input(double *a, double *b, double *c);
+void square_input(struct SquareTrinomial *coeffs);
 
 
 int main(){
 
     introduction();
 
-    double a = 0;
-    double b = 0;
-    double c = 0;
+    SquareTrinomial coeffs;
 
-    square_input(&a, &b, &c);
-    square_solver(a, b, c);
+    square_input(&coeffs);
+    square_solver(&coeffs);
 
     return 0;
 }
@@ -62,54 +60,52 @@ bool is_zero(double n) {
 }
 
 
-void square_solver(const double a, const double b, const double c) {
+void square_solver(SquareTrinomial *coeffs) {
 
-    assert(isfinite(a));
-    assert(isfinite(b));
-    assert(isfinite(c));
+    assert(isfinite(coeffs->a));
+    assert(isfinite(coeffs->b));
+    assert(isfinite(coeffs->c));
 
-    int count_solutions = -1;
-    double x1 = '0';
-    double x2 = '0';
+    struct Roots roots;
 
-    if (!is_zero(a)) {
+    if (!is_zero(coeffs->a)) {
 
-        const double d = b * b - 4 * a * c;
+        const double d = coeffs->b * coeffs->b - 4 * coeffs->a * coeffs->c;
 
         if (is_greater(d)) {
 
             const double d_sqrt = sqrt(d);
-            x1 = (-b + d_sqrt) / (2 * a);
-            x2 = (-b - d_sqrt) / (2 * a);
-            count_solutions = 2;
+            roots.x1 = (-coeffs->b + d_sqrt) / (2 * coeffs->a);
+            roots.x2 = (-coeffs->b - d_sqrt) / (2 * coeffs->a);
+            roots.count_solutions = 2;
         }
 
         else if (is_zero(d)) {
 
-            x1 = -b / (2 * a);
-            count_solutions = 1;
+            roots.x1 = -coeffs->b / (2 * coeffs->a);
+            roots.count_solutions = 1;
         }
 
         else {
 
-            count_solutions = 0;
+            roots.count_solutions = 0;
         }
     }
 
     else {
 
-        if (!is_zero(b)) {
+        if (!is_zero(coeffs->b)) {
 
-            x1 = -c / b;
-            count_solutions = 1;
+            roots.x1 = -coeffs->c / coeffs->b;
+            roots.count_solutions = 1;
         }
 
         else {
 
-            count_solutions = (is_zero(c)) ? INFINITE_SOLUTIONS : 0;
+            roots.count_solutions = (is_zero(coeffs->c)) ? INFINITE_SOLUTIONS : 0;
         }
     }
-    square_print(count_solutions, &x1, &x2);
+    square_print(&roots);
 }
 
 
@@ -133,21 +129,21 @@ bool is_greater(double n){
 }
 
 
-void square_print(const int count_solutions, const double *x1, const double *x2){
-    assert(x1 != NULL);
-    assert(x2 != NULL);
-    assert(isfinite(*x1));
-    assert(isfinite(*x2));
+void square_print(struct Roots *roots){
 
-    switch(count_solutions) {
+    assert(roots != NULL);
+    assert(isfinite(roots->x1));
+    assert(isfinite(roots->x2));
+
+    switch(roots->count_solutions) {
         case 0:
             printf("У данного уравнения нет корней в действительных величинах.\n");
             break;
         case 1:
-            printf("Корень уравнения: %.*lf\n", DIGITS_AFTER_POINT, *x1);
+            printf("Корень уравнения: %.*lf\n", DIGITS_AFTER_POINT, roots->x1);
             break;
         case 2:
-            printf("Корни уравнения: %.*lf %.*lf\n", DIGITS_AFTER_POINT, *x1, DIGITS_AFTER_POINT, *x2);
+            printf("Корни уравнения: %.*lf %.*lf\n", DIGITS_AFTER_POINT, roots->x1, DIGITS_AFTER_POINT, roots->x2);
             break;
         default:
             printf("Бесконечное множество решений.");
@@ -156,8 +152,9 @@ void square_print(const int count_solutions, const double *x1, const double *x2)
 }
 
 
-void square_input(double *a, double *b, double *c){
-    while(scanf("%lf %lf %lf", &(*a), &(*b), &(*c)) != 3) {  // сделать функцию
+void square_input(struct SquareTrinomial *coeffs){
+    while(scanf("%lf %lf %lf", &coeffs->a, &coeffs->b, &coeffs->c) != 3) {
+
         clear_buf();
 
         printf("Вы ввели некорректные данные."

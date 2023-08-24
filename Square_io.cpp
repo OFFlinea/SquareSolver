@@ -1,3 +1,4 @@
+#include "Square_types.h"
 #include "Square_io.h"
 #include <stdio.h>
 #include <windows.h>
@@ -19,6 +20,11 @@ void clear_buf(void) {
 
 void square_input(struct SquareTrinomial *coeffs) {
 
+    assert(coeffs != NULL);
+    assert(isfinite(coeffs->a));
+    assert(isfinite(coeffs->b));
+    assert(isfinite(coeffs->c));
+
     printf("Введите коэффициенты квадратного уравнения: ");
 
     while(scanf("%lf %lf %lf", &coeffs->a, &coeffs->b, &coeffs->c) != 3) {
@@ -37,7 +43,7 @@ void square_input(struct SquareTrinomial *coeffs) {
 }
 
 
-void square_print(struct Roots *roots) {
+void square_print(const struct Roots *roots) {
 
     assert(roots != NULL);
     assert(isfinite(roots->x1));

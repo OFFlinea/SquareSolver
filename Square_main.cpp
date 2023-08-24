@@ -1,15 +1,23 @@
 #include <TXLib.h>
-#include "Square_io.h"
+// #include "Square_io.h"
 #include <stdio.h>
-#include <assert.h>
-#include <windows.h>
 #include <math.h>
+#include <windows.h>
+#include <assert.h>
 
+const int DIGITS_AFTER_POINT = 1;
 const int N_TESTS = 6;
 const int INFINITE_SOLUTIONS = 3;
 const double EPSILON = 1e-6;
 
-struct RefRoots
+struct SquareTrinomial
+{
+    double a;
+    double b;
+    double c;
+};
+
+struct Roots
 {
     double x1;
     double x2;
@@ -18,7 +26,7 @@ struct RefRoots
 
 void test_question(void);
 
-int TestOne(struct SquareTrinomial *coeffs, struct Roots *roots, struct RefRoots refroots);
+int TestOne(const struct SquareTrinomial *coeffs, struct Roots *roots, const struct Roots *refroots);
 
 int TestAll(void);
 
@@ -28,9 +36,18 @@ bool is_greater(double n);
 
 bool f_comparison(double x, double y);
 
-void square_solver(struct SquareTrinomial *coeffs, struct Roots *roots);
+void square_solver(const struct SquareTrinomial *coeffs, struct Roots *roots);
 
-void linear_solver(struct SquareTrinomial *coeffs, struct Roots *roots);
+void linear_solver(const struct SquareTrinomial *coeffs, struct Roots *roots);
+
+void introduction(void);
+
+void clear_buf(void);
+
+void square_print(const struct Roots *roots);
+
+void square_input(struct SquareTrinomial *coeffs);
+
 
 int main() {
 
@@ -48,14 +65,17 @@ int main() {
 }
 
 
-int TestOne(struct SquareTrinomial *coeffs, struct Roots *roots, struct RefRoots refroots) {
+int TestOne(const struct SquareTrinomial *coeffs, struct Roots *roots, const struct Roots *refroots) {
 
     assert(coeffs != NULL);
     assert(roots != NULL);
+    assert(isfinite(coeffs->a));
+    assert(isfinite(coeffs->b));
+    assert(isfinite(coeffs->c));
 
     square_solver(coeffs, roots);
 
-    if (!f_comparison(roots->x1, refroots.x1) || !f_comparison(roots->x2, refroots.x2) || roots->count_solutions != refroots.count_solutions) {
+    if (!f_comparison(roots->x1, refroots->x1) || !f_comparison(roots->x2, refroots->x2) || roots->count_solutions != refroots->count_solutions) {
 
         HANDLE  hConsole;
         hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -63,7 +83,7 @@ int TestOne(struct SquareTrinomial *coeffs, struct Roots *roots, struct RefRoots
 
         printf("Failed: x1 = %lf, x2 = %lf, count_solutions = %d\n"
                "Expected: x1 = %lf, x2 = %lf, count_solutions = %d\n", roots->x1, roots->x2, roots->count_solutions,
-                refroots.x1, refroots.x2, refroots.count_solutions);
+                refroots->x1, refroots->x2, refroots->count_solutions);
 
         SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 
@@ -83,7 +103,7 @@ int TestOne(struct SquareTrinomial *coeffs, struct Roots *roots, struct RefRoots
 
 int TestAll(void) {
 
-    #define CREAT_TEST TestOne(&tests_coeffs[i], &roots, tests_refroots[i])
+    #define CREAT_TEST TestOne(&tests_coeffs[i], &roots, &tests_refroots[i])
 
     int count_correct_tests = 0;
 
@@ -93,12 +113,12 @@ int TestAll(void) {
                                              {0, 0, 6},
                                              {0, 2, -4},
                                              {1, 0, -4}};
-    struct RefRoots tests_refroots[] = {{-1, -1, 1},
-                                        {1, -2, 2},
-                                        {0, 0, INFINITE_SOLUTIONS},
-                                        {0, 0, 0},
-                                        {2, 2, 1},
-                                        {2, -2, 2}};
+    struct Roots tests_refroots[] = {{-1, -1, 1},
+                                    {1, -2, 2},
+                                    {0, 0, INFINITE_SOLUTIONS},
+                                    {0, 0, 0},
+                                    {2, 2, 1},
+                                    {2, -2, 2}};
 
     for(int i = 0; i < N_TESTS; i++) {
 
@@ -145,11 +165,15 @@ bool is_greater(double n) {
 
 
 bool f_comparison(double x, double y) {
+
+    assert(isfinite(x));
+    assert(isfinite(y));
+
     return (fabs(x - y) < EPSILON) ? true : false;
 }
 
 
-void linear_solver(struct SquareTrinomial *coeffs, struct Roots *roots) {
+void linear_solver(const struct SquareTrinomial *coeffs, struct Roots *roots) {
 
     assert(coeffs != NULL);
     assert(roots != NULL);
@@ -168,13 +192,15 @@ void linear_solver(struct SquareTrinomial *coeffs, struct Roots *roots) {
 }
 
 
-void square_solver(struct SquareTrinomial *coeffs, struct Roots *roots) {
+void square_solver(const struct SquareTrinomial *coeffs, struct Roots *roots) {
 
+    assert(coeffs != NULL);
+    assert(roots != NULL);
     assert(isfinite(coeffs->a));
     assert(isfinite(coeffs->b));
     assert(isfinite(coeffs->c));
-    assert(coeffs != NULL);
-    assert(roots != NULL);
+
+    *roots = {0, 0, -1};
 
     if (!is_zero(coeffs->a)) {
 
@@ -202,4 +228,65 @@ void square_solver(struct SquareTrinomial *coeffs, struct Roots *roots) {
     }
 
     else linear_solver(coeffs, roots);
+}
+
+void introduction(void) {
+
+    printf("Эта программа решает квадратное уравнение\n");
+}
+
+
+void clear_buf(void) {
+
+    int c = getchar();
+    while((c = getchar()) != '\n');
+}
+
+
+void square_input(struct SquareTrinomial *coeffs) {
+
+    assert(coeffs != NULL);
+    assert(isfinite(coeffs->a));
+    assert(isfinite(coeffs->b));
+    assert(isfinite(coeffs->c));
+
+    printf("Введите коэффициенты квадратного уравнения: ");
+
+    while(scanf("%lf %lf %lf", &coeffs->a, &coeffs->b, &coeffs->c) != 3) {
+
+        clear_buf();
+
+        HANDLE  hConsole;
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+
+        printf("Вы ввели некорректные данные."
+        " Вы должны ввести 3 числа через пробелы, попробуйте снова: ");
+
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+    }
+}
+
+
+void square_print(const struct Roots *roots) {
+
+    assert(roots != NULL);
+    assert(isfinite(roots->x1));
+    assert(isfinite(roots->x2));
+
+    switch(roots->count_solutions) {
+
+        case 0:
+            printf("У данного уравнения нет корней в действительных величинах.\n");
+            break;
+        case 1:
+            printf("Корень уравнения: %.*lf\n", DIGITS_AFTER_POINT, roots->x1);
+            break;
+        case 2:
+            printf("Корни уравнения: %.*lf %.*lf\n", DIGITS_AFTER_POINT, roots->x1, DIGITS_AFTER_POINT, roots->x2);
+            break;
+        default:
+            printf("Бесконечное множество решений.");
+            break;
+    }
 }

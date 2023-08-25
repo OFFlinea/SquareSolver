@@ -24,4 +24,5 @@ int main() {
     square_print(&roots);
 
     return 0;
+}
 ```

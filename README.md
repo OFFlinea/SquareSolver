@@ -5,8 +5,4 @@
 ![](https://github.com/OFFlinea/SquareSolver/blob/main/pictures/test.png)\
 Затем попросит ввести вас коэффициенты квадратного уравнения, после ввода вам выведутся корни уравнения.\
 ![](https://github.com/OFFlinea/SquareSolver/blob/main/pictures/solver.png)
-## Запуск
-После установки вам нужно будет открыть командную строку (win + r -> cmd -> enter)\
-Затем ввести туда: cd _Путь к папке со всеми файлами_ (Пример: cd C:\CodeBlocks\SquareSolver)\
-Потом: make\
-После этого в вашей папке появится файл *Square.exe* и вы сможете его спокойно запускать.      
+      

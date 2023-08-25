@@ -11,7 +11,7 @@ void introduction(void) {
 }
 
 
-void clear_buf(void) {   //EOF
+void clear_buf(void) {
 
     int c = getchar();
     while((c = getchar()) != '\n' && c != EOF)

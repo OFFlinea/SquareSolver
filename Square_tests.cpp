@@ -1,6 +1,7 @@
 #include "Square_types.h"
 #include "Square_tests.h"
 #include "Square_solver.h"
+#include "Square_io.h"
 #include <assert.h>
 #include <windows.h>
 #include <stdio.h>
@@ -16,17 +17,19 @@ int TestOne(const struct SquareTrinomial *coeffs, struct Roots *roots, const str
 
     square_solver(coeffs, roots);
 
-    if (!f_comparison(roots->x1, refroots->x1) || !f_comparison(roots->x2, refroots->x2) || roots->count_solutions != refroots->count_solutions) {
+    if (!f_comparison(roots->x1, refroots->x1) ||
+        !f_comparison(roots->x2, refroots->x2) ||
+        roots->count_solutions != refroots->count_solutions) {
 
         HANDLE  hConsole;
         hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 
-        printf("Failed: x1 = %lf, x2 = %lf, count_solutions = %d\n"
-               "Expected: x1 = %lf, x2 = %lf, count_solutions = %d\n", roots->x1, roots->x2, roots->count_solutions,
-                refroots->x1, refroots->x2, refroots->count_solutions);
+        printf("Failed:   x1 = %lf, x2 = %lf, count_solutions = %d\n"
+               "Expected: x1 = %lf, x2 = %lf, count_solutions = %d\n", roots->x1, roots->x2,
+                roots->count_solutions, refroots->x1, refroots->x2, refroots->count_solutions);
 
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+        SetConsoleTextAttribute(hConsole, WHITE);
 
         return 0;
     }
@@ -36,7 +39,7 @@ int TestOne(const struct SquareTrinomial *coeffs, struct Roots *roots, const str
         hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
         printf("Test OK.\n");
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+        SetConsoleTextAttribute(hConsole, WHITE);
         return 1;
     }
 }
@@ -48,18 +51,20 @@ int TestAll(void) {
 
     int count_correct_tests = 0;
 
-    struct SquareTrinomial tests_coeffs[] = {{1, 2, 1},
+    struct SquareTrinomial tests_coeffs[] = {{1, 2,  1},
                                              {2, 2, -4},
-                                             {0, 0, 0},
-                                             {0, 0, 6},
+                                             {0, 0,  0},
+                                             {0, 0,  6},
                                              {0, 2, -4},
-                                             {1, 0, -4}};
+                                             {1, 0, -4},
+                                             {2, 0, 0}};
     struct Roots tests_refroots[] = {{-1, -1, 1},
-                                    {1, -2, 2},
-                                    {0, 0, INFINITE_SOLUTIONS},
-                                    {0, 0, 0},
-                                    {2, 2, 1},
-                                    {2, -2, 2}};
+                                     { 1, -2, 2},
+                                     { 0,  0, INFINITE_SOLUTIONS},
+                                     { 0,  0, 0},
+                                     { 2,  2, 1},
+                                     { 2, -2, 2},
+                                     {0, 0, 1}};
 
     for(int i = 0; i < N_TESTS; i++) {
 
@@ -75,14 +80,14 @@ int TestAll(void) {
 
 
 void test_question(void) {
-    printf("Õîòèòå ëè âû ïðîâåðèòü ðàáîòó ïðîãðàììû?\nÂâåäèòå 1,"
-           " åñëè õîòèòå, è ÷òî óãîäíî, åñëè âû äîâåðÿåòå ïðîãðàììå.\n");
+    printf("Ð¥Ð¾Ñ‚Ð¸Ñ‚Ðµ Ð»Ð¸ Ð²Ñ‹ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹?\n"
+           "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ 1, ÐµÑÐ»Ð¸ Ñ…Ð¾Ñ‚Ð¸Ñ‚Ðµ, Ð¸ Ñ‡Ñ‚Ð¾ ÑƒÐ³Ð¾Ð´Ð½Ð¾, ÐµÑÐ»Ð¸ Ð²Ñ‹ Ð´Ð¾Ð²ÐµÑ€ÑÐµÑ‚Ðµ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ðµ.\n");
     int answer = 0;
     scanf("%d", &answer);
     if (answer == 1) {
 
-        printf("Êîëè÷åñòâî ïðàâèëüíûõ òåñòîâ: %d\n"
-           "Êîëè÷åñòâî ïðîéäåííûõ òåñòîâ: %d\n", TestAll(), N_TESTS);
+        printf("ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ñ‹Ñ… Ñ‚ÐµÑÑ‚Ð¾Ð²: %d\n"
+               "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð¿Ñ€Ð¾Ð¹Ð´ÐµÐ½Ð½Ñ‹Ñ… Ñ‚ÐµÑÑ‚Ð¾Ð²: %d\n", TestAll(), N_TESTS);
     }
     else clear_buf();
 }

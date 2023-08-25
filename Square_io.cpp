@@ -7,14 +7,15 @@
 
 void introduction(void) {
 
-    printf("Эта программа решает квадратное уравнение\n");
+    printf("Р­С‚Р° РїСЂРѕРіСЂР°РјРјР° СЂРµС€Р°РµС‚ РєРІР°РґСЂР°С‚РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ");
 }
 
 
-void clear_buf(void) {
+void clear_buf(void) {   //EOF
 
     int c = getchar();
-    while((c = getchar()) != '\n');
+    while((c = getchar()) != '\n' && c != EOF)
+        ;
 }
 
 
@@ -25,7 +26,7 @@ void square_input(struct SquareTrinomial *coeffs) {
     assert(isfinite(coeffs->b));
     assert(isfinite(coeffs->c));
 
-    printf("Введите коэффициенты квадратного уравнения: ");
+    printf("Р’РІРµРґРёС‚Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РєРІР°РґСЂР°С‚РЅРѕРіРѕ СѓСЂР°РІРЅРµРЅРёСЏ: ");
 
     while(scanf("%lf %lf %lf", &coeffs->a, &coeffs->b, &coeffs->c) != 3) {
 
@@ -35,10 +36,10 @@ void square_input(struct SquareTrinomial *coeffs) {
         hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 
-        printf("Вы ввели некорректные данные."
-        " Вы должны ввести 3 числа через пробелы, попробуйте снова: ");
+        printf("Р’С‹ РІРІРµР»Рё РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Рµ РґР°РЅРЅС‹Рµ."
+                    " Р’С‹ РґРѕР»Р¶РЅС‹ РІРІРµСЃС‚Рё 3 С‡РёСЃР»Р° С‡РµСЂРµР· РїСЂРѕР±РµР»С‹, РїРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°: ");
 
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+        SetConsoleTextAttribute(hConsole, WHITE);
     }
 }
 
@@ -52,16 +53,16 @@ void square_print(const struct Roots *roots) {
     switch(roots->count_solutions) {
 
         case 0:
-            printf("У данного уравнения нет корней в действительных величинах.\n");
+            printf("РЈ РґР°РЅРЅРѕРіРѕ СѓСЂР°РІРЅРµРЅРёСЏ РЅРµС‚ РєРѕСЂРЅРµР№ РІ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅС‹С… РІРµР»РёС‡РёРЅР°С….\n");
             break;
         case 1:
-            printf("Корень уравнения: %.*lf\n", DIGITS_AFTER_POINT, roots->x1);
+            printf("РљРѕСЂРµРЅСЊ СѓСЂР°РІРЅРµРЅРёСЏ: %.*lf\n", DIGITS_AFTER_POINT, roots->x1);
             break;
         case 2:
-            printf("Корни уравнения: %.*lf %.*lf\n", DIGITS_AFTER_POINT, roots->x1, DIGITS_AFTER_POINT, roots->x2);
+            printf("РљРѕСЂРЅРё СѓСЂР°РІРЅРµРЅРёСЏ: %.*lf %.*lf\n", DIGITS_AFTER_POINT, roots->x1, DIGITS_AFTER_POINT, roots->x2);
             break;
         default:
-            printf("Бесконечное множество решений.");
+            printf("Р‘РµСЃРєРѕРЅРµС‡РЅРѕРµ РјРЅРѕР¶РµСЃС‚РІРѕ СЂРµС€РµРЅРёР№.");
             break;
     }
 }

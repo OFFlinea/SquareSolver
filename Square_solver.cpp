@@ -9,7 +9,7 @@ bool is_zero(double n) {
 
     assert(isfinite(n));
 
-    return (fabs(n) < EPSILON) ? true : false;
+    return fabs(n) < EPSILON;
 
 }
 
@@ -18,7 +18,7 @@ bool is_greater(double n) {
 
     assert(isfinite(n));
 
-    return (n > EPSILON) ? true : false;
+    return n > EPSILON;
 }
 
 
@@ -27,26 +27,24 @@ bool f_comparison(double x, double y) {
     assert(isfinite(x));
     assert(isfinite(y));
 
-    return (fabs(x - y) < EPSILON) ? true : false;
+    return fabs(x - y) < EPSILON;
 }
 
 
 void linear_solver(const struct SquareTrinomial *coeffs, struct Roots *roots) {
 
     assert(coeffs != NULL);
-    assert(roots != NULL);
+    assert(roots  != NULL);
 
     if (!is_zero(coeffs->b)) {
 
-            roots->x1 = -coeffs->c / coeffs->b;
-            roots->x2 = roots->x1;
-            roots->count_solutions = 1;
-        }
-
-        else {
-
-            roots->count_solutions = (is_zero(coeffs->c)) ? INFINITE_SOLUTIONS : 0;
-        }
+        roots->x1 = -coeffs->c / coeffs->b;
+        roots->x2 = roots->x1;
+        roots->count_solutions = 1;
+    }
+    else {
+        roots->count_solutions = (is_zero(coeffs->c)) ? INFINITE_SOLUTIONS : 0;
+    }
 }
 
 
@@ -75,6 +73,7 @@ void square_solver(const struct SquareTrinomial *coeffs, struct Roots *roots) {
         else if (is_zero(d)) {
 
             roots->x1 = -coeffs->b / (2 * coeffs->a);
+            roots->x1 = (is_zero(roots->x1)) ? 0 : roots->x1;
             roots->x2 = roots->x1;
             roots->count_solutions = 1;
         }
@@ -85,5 +84,7 @@ void square_solver(const struct SquareTrinomial *coeffs, struct Roots *roots) {
         }
     }
 
-    else linear_solver(coeffs, roots);
+    else
+        linear_solver(coeffs, roots);
+
 }

@@ -7,5 +7,5 @@
 ![](https://github.com/OFFlinea/SquareSolver/blob/main/pictures/solver.png)
 ## Неправильный ввод
 Программа не заработает, пока вы не введёте корректные данные.\
-_Примеры неправильного ввода:_\
+_Примеры неправильного ввода_:\
 ![](https://github.com/OFFlinea/SquareSolver/blob/main/pictures/input.PNG)

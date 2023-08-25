@@ -21,10 +21,10 @@
 //! This program solves square equations
 
 
-int main() {
+int main(int argc, char *argv[]) {
 
     introduction();
-    test_question();
+    command_check(argc, argv);
 
     struct Roots roots = {};
     struct SquareTrinomial coeffs = {};

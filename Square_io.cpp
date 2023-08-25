@@ -1,21 +1,59 @@
 #include "Square_types.h"
 #include "Square_io.h"
+#include "Square_tests.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <windows.h>
 #include <assert.h>
 #include <math.h>
 
 void introduction(void) {
 
-    printf("Эта программа решает квадратное уравнение");
+    printf("Эта программа решает квадратное уравнение\n");
+}
+
+
+void command_check(int argc, char *argv[]) {
+
+    for (int i = 0; i < argc; i++) {
+
+        if (strcmp(argv[i], "-t") == 0) {
+
+            test_question();
+        }
+        else if (strcmp(argv[i], "--help") == 0) {
+
+            printf("Краткое описание работы программы:\n"
+                   "В начале вас спросят хотите ли вы протестировать программу. "
+                   "Если да, то она протестируется, если нет пойдёт дальше.\n"
+                   "Затем попросит ввести вас коэффициенты квадратного уравнения, "
+                   "после ввода вам выведутся корни уравнения.\n"
+                   "-t Filename Включает тесты программы.\n\n");
+        }
+    }
+}
+
+
+void eof_control(const int c) {
+
+    if (c == EOF) {
+
+        printf("Зачем вы ввели EOF?\n"
+               "Эта программа будет завершена.\n");
+
+        exit(0);
+    }
 }
 
 
 void clear_buf(void) {
 
     int c = getchar();
-    while((c = getchar()) != '\n' && c != EOF)
-        ;
+
+    while((c = getchar()) != '\n') {
+
+        eof_control(c);
+    }
 }
 
 
@@ -59,7 +97,8 @@ void square_print(const struct Roots *roots) {
             printf("Корень уравнения: %.*lf\n", DIGITS_AFTER_POINT, roots->x1);
             break;
         case 2:
-            printf("Корни уравнения: %.*lf %.*lf\n", DIGITS_AFTER_POINT, roots->x1, DIGITS_AFTER_POINT, roots->x2);
+            printf("Корни уравнения: %.*lf %.*lf\n", DIGITS_AFTER_POINT, roots->x1,
+                    DIGITS_AFTER_POINT, roots->x2);
             break;
         default:
             printf("Бесконечное множество решений.");

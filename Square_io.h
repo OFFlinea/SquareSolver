@@ -14,3 +14,12 @@ void square_input(struct SquareTrinomial *coeffs);
 
 //! Clearing the input buffer
 void clear_buf(void);
+
+//! If find EOF, will terminate the program
+//! @param [in] c Symbol from the input buffer
+void eof_control(const int c);
+
+//! Сhecks the command line for keywords
+//! @param [in] argc Number of lines entered from the command line
+//! @param [in] argv List of entered lines from the command line
+void command_check(int argc, char *argv[]);

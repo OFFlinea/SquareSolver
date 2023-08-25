@@ -9,3 +9,19 @@
 Программа не заработает, пока вы не введёте корректные данные.\
 _Примеры неправильного ввода_:\
 ![](https://github.com/OFFlinea/SquareSolver/blob/main/pictures/input.PNG)
+## Main
+```
+int main() {
+
+    introduction();
+    test_question();
+
+    struct Roots roots = {};
+    struct SquareTrinomial coeffs = {};
+
+    square_input(&coeffs);
+    square_solver(&coeffs, &roots);
+    square_print(&roots);
+
+    return 0;
+```

@@ -139,7 +139,7 @@ void test_file(const char filename[]) {
         if (fscanf(file_tests, "%lf %lf %lf %lf %lf %d", &coeffs_test.a, &coeffs_test.b, &coeffs_test.c,
               &(refroots_test.x1), &refroots_test.x2, &refroots_test.count_solutions) != 6) {
 
-            printf("Некорректный файл с тестами. Номер строки с некорректными данными: %d\n", i);
+            printf("Некорректный файл с тестами. Номер строки с некорректными данными: %d\n", i + 1);
             return;
         }
 

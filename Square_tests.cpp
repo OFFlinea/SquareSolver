@@ -140,7 +140,7 @@ void test_file(const char filename[]) {
               &(refroots_test.x1), &refroots_test.x2, &refroots_test.count_solutions) != 6) {
 
             printf("Некорректный файл с тестами. Номер строки с некорректными данными: %d\n", i + 1);
-            break;
+            continue;
         }
 
         correct_tests += TestOne(&coeffs_test, &roots, &refroots_test);

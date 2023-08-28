@@ -138,7 +138,7 @@ void test_file(const char filename[]) {
               &tests_params.x1, &tests_params.x2, &tests_params.count_solutions) != 6) {
 
             printf("Некорректный файл с тестами. Номер строки с некорректными данными: %d\n", i + 1);
-            abort();
+            return;
         }
 
         correct_tests += TestOne(&tests_params, &roots);

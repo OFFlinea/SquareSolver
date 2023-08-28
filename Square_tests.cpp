@@ -7,19 +7,23 @@
 #include <stdio.h>
 #include <math.h>
 
-int TestOne(const struct SquareTrinomial *coeffs, struct Roots *roots, const struct Roots *refroots) {
+int TestOne(const struct Test *tests_params, struct Roots *roots) {
 
-    assert(coeffs != NULL);
+    assert(tests_params != NULL);
     assert(roots != NULL);
-    assert(isfinite(coeffs->a));
-    assert(isfinite(coeffs->b));
-    assert(isfinite(coeffs->c));
+    assert(isfinite(tests_params->a));
+    assert(isfinite(tests_params->b));
+    assert(isfinite(tests_params->c));
+    assert(isfinite(tests_params->x1));
+    assert(isfinite(tests_params->x2));
 
-    square_solver(coeffs, roots);
+    struct SquareTrinomial coeffs = {tests_params->a, tests_params->b, tests_params->c};
 
-    if (!f_comparison(roots->x1, refroots->x1) ||
-        !f_comparison(roots->x2, refroots->x2) ||
-        roots->count_solutions != refroots->count_solutions) {
+    square_solver(&coeffs, roots);
+
+    if (!f_comparison(roots->x1, tests_params->x1) ||
+        !f_comparison(roots->x2, tests_params->x2) ||
+        roots->count_solutions != tests_params->count_solutions) {
 
         HANDLE  hConsole;
         hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -27,7 +31,7 @@ int TestOne(const struct SquareTrinomial *coeffs, struct Roots *roots, const str
 
         printf("Failed:   x1 = %lf, x2 = %lf, count_solutions = %d\n"
                "Expected: x1 = %lf, x2 = %lf, count_solutions = %d\n", roots->x1, roots->x2,
-                roots->count_solutions, refroots->x1, refroots->x2, refroots->count_solutions);
+                roots->count_solutions, tests_params->x1, tests_params->x2, tests_params->count_solutions);
 
         SetConsoleTextAttribute(hConsole, WHITE);
 
@@ -45,28 +49,23 @@ int TestOne(const struct SquareTrinomial *coeffs, struct Roots *roots, const str
 }
 
 
-int TestAll(void) {
+void TestAll(void) {
 
-    #define CREAT_TEST TestOne(&tests_coeffs[i], &roots, &tests_refroots[i])
+    #define CREAT_TEST TestOne(&tests_params[i], &roots)
 
     int count_correct_tests = 0;
 
-    struct SquareTrinomial tests_coeffs[] = {{1, 2,  1},
-                                             {2, 2, -4},
-                                             {0, 0,  0},
-                                             {0, 0,  6},
-                                             {0, 2, -4},
-                                             {1, 0, -4},
-                                             {2, 0, 0}};
-    struct Roots tests_refroots[] = {{-1, -1, 1},
-                                     { 1, -2, 2},
-                                     { 0,  0, INFINITE_SOLUTIONS},
-                                     { 0,  0, 0},
-                                     { 2,  2, 1},
-                                     { 2, -2, 2},
-                                     {0, 0, 1}};
+    struct Test tests_params[] = {{1, 2,  1, -1, -1, 1},
+                                  {2, 2, -4,  1, -2, 2},
+                                  {0, 0,  0,  0,  0, INFINITE_SOLUTIONS},
+                                  {0, 0,  6,  0,  0, 0},
+                                  {0, 2, -4,  2,  2, 1},
+                                  {1, 0, -4,  2, -2, 2},
+                                  {2, 0,  0,  0,  0, 1}};
 
-    for(int i = 0; i < N_TESTS; i++) {
+    const size_t N_TESTS = sizeof(tests_params) / sizeof(tests_params[0]);
+
+    for(size_t i = 0; i < N_TESTS; i++) {
 
         struct Roots roots;
 
@@ -75,7 +74,8 @@ int TestAll(void) {
 
     #undef CREAT_TEST
 
-    return count_correct_tests;
+    printf("Количество правильных тестов: %d\n"
+               "Количество пройденных тестов: %d\n", count_correct_tests, N_TESTS);
 }
 
 
@@ -106,8 +106,7 @@ void test_question(void) {
 
     if (answer == 1) {
 
-        printf("Количество правильных тестов: %d\n"
-               "Количество пройденных тестов: %d\n", TestAll(), N_TESTS);
+        TestAll();
     }
     else {
         clear_buf();
@@ -132,18 +131,17 @@ void test_file(const char filename[]) {
 
     for (int i = 0; i < NLINES; i++) {
 
-        struct SquareTrinomial coeffs_test = {};
+        struct Test tests_params = {};
         struct Roots roots = {};
-        struct Roots refroots_test = {};
 
-        if (fscanf(file_tests, "%lf %lf %lf %lf %lf %d", &coeffs_test.a, &coeffs_test.b, &coeffs_test.c,
-              &(refroots_test.x1), &refroots_test.x2, &refroots_test.count_solutions) != 6) {
+        if (fscanf(file_tests, "%lf %lf %lf %lf %lf %d", &tests_params.a, &tests_params.b, &tests_params.c,
+              &tests_params.x1, &tests_params.x2, &tests_params.count_solutions) != 6) {
 
             printf("Некорректный файл с тестами. Номер строки с некорректными данными: %d\n", i + 1);
-            break;
+            abort();
         }
 
-        correct_tests += TestOne(&coeffs_test, &roots, &refroots_test);
+        correct_tests += TestOne(&tests_params, &roots);
     }
 
     fclose(file_tests);

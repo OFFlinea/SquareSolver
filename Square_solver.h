@@ -1,3 +1,6 @@
+#ifndef SQUARE_SOLVER_H
+#define SQUARE_SOLVER_H
+
 //! Accuracy of comparison
 const double EPSILON = 1e-6;
 
@@ -23,3 +26,4 @@ void square_solver(const struct SquareTrinomial *coeffs, struct Roots *roots);
 //! @param [in] coeffs An object of the SquareTrinomial structure containing the coefficients of the square equation
 //! @param [out] roots An object of the Roots structure containing the roots of the equation and the number of rootsй
 void linear_solver(const struct SquareTrinomial *coeffs, struct Roots *roots);
+#endif

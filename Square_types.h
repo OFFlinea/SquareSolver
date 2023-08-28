@@ -1,5 +1,6 @@
-//! Number of tests
-const int N_TESTS = 7;
+#ifndef SQUARE_TYPES_H
+#define SQUARE_TYPES_H
+
 //! Infinite number of solutions, expressed by the number 3
 const int INFINITE_SOLUTIONS = 3;
 //! White text
@@ -20,3 +21,4 @@ struct Roots
     double x2; //!< The second root of the equation
     int count_solutions; //!< Number of solutions to the equation
 };
+#endif

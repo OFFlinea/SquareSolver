@@ -14,7 +14,7 @@ bool is_zero(double n) {
 }
 
 
-bool is_greater(double n) {
+bool is_greater_than_zero(double n) {
 
     assert(isfinite(n));
 
@@ -39,6 +39,7 @@ void linear_solver(const struct SquareTrinomial *coeffs, struct Roots *roots) {
     if (!is_zero(coeffs->b)) {
 
         roots->x1 = -coeffs->c / coeffs->b;
+        roots->x1 = (is_zero(roots->x1)) ? 0 : roots->x1;
         roots->x2 = roots->x1;
         roots->count_solutions = 1;
     }
@@ -62,7 +63,7 @@ void square_solver(const struct SquareTrinomial *coeffs, struct Roots *roots) {
 
         const double d = coeffs->b * coeffs->b - 4 * coeffs->a * coeffs->c;
 
-        if (is_greater(d)) {
+        if (is_greater_than_zero(d)) {
 
             const double d_sqrt = sqrt(d);
             roots->x1 = (-coeffs->b + d_sqrt) / (2 * coeffs->a);

@@ -1,8 +1,11 @@
 //! The number of decimal places in the output numbers
 const int DIGITS_AFTER_POINT = 1;
 
-//! Program Description
+//! Brief program description
 void introduction(void);
+
+//! Description of the program
+void help(void);
 
 //! Answer output
 //! @param [in] roots An object of the Roots structure containing the roots of the equation and the number of roots

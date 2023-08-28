@@ -7,7 +7,7 @@ bool is_zero(double n);
 
 //! Check: is the float number greater than zero
 //! @param [in] n A float number that is compared to zero
-bool is_greater(double n);
+bool is_greater_than_zero(double n);
 
 //! Comparison of float numbers
 //! @param [in] x A float number
